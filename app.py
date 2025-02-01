@@ -2,7 +2,8 @@ import whisper
 import os
 from utils import *
 from moviepy import *
-from flask import Flask, render_template, request, redirect, url_for
+from moviepy.editor import *
+from flask import Flask, render_template, request, redirect, url_for,  jsonify
 import json
 import re
 import instaloader
