@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Instagram Calculator</title>
+    <title>YouTube Calculator</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -108,12 +108,12 @@
                     input = document.createElement('input');
                     input.type = 'text';
                     input.name = `input_${inputCount + 1}`;
-                    input.placeholder = 'Instagram Username';
+                    input.placeholder = 'YouTube Username';
                 } else if (type === 'link') {
                     input = document.createElement('input');
                     input.type = 'url';
                     input.name = `input_${inputCount + 1}`;
-                    input.placeholder = 'Instagram Reel Link';
+                    input.placeholder = 'YouTube Reel Link';
                 }
 
                 input.addEventListener('change', function() {
