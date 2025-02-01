@@ -216,6 +216,62 @@
             font-size: 0.8em;
         }
 
+        .tags-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .tag-section {
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 12px;
+        }
+
+        .tag-section-title {
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .analysis-tag {
+            background: #fff;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .manual-tag {
+            border-left: 3px solid #4CAF50;
+        }
+
+        .auto-tag {
+            border-left: 3px solid #2196F3;
+        }
+
+        .transcript-tag {
+            border-left: 3px solid #FF9800;
+        }
+
+        .transcript-container {
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .transcript-content {
+            font-size: 0.9em;
+            line-height: 1.6;
+            color: #333;
+            white-space: pre-wrap;
+        }
+
         /* Modal styles */
         .modal {
             display: none;
@@ -383,6 +439,7 @@
     </div>
 
     <script>
+        // Replace with your actual YouTube API key
         const API_KEY = 'AIzaSyATpW25W4otO89XApTpOscfFv4xgp7Ktls';
 
         const genres = [
@@ -404,6 +461,50 @@
         });
 
         // Enhanced viral analysis function
+        async function getVideoTranscript(videoId) {
+            try {
+                const response = await fetch('http://localhost:3000/transcribe', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ videoId })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Transcription failed');
+                }
+
+                const data = await response.json();
+                return data.transcription;
+            } catch (error) {
+                console.error('Error getting transcript:', error);
+                return 'Failed to generate transcript. Please try again later.';
+            }
+        }
+
+        function extractKeywordsFromText(text) {
+            // Remove special characters and split into words
+            const words = text.toLowerCase().replace(/[^\w\s]/g, '').split(/\s+/);
+            
+            // Common English stop words to filter out
+            const stopWords = new Set(['the', 'be', 'to', 'of', 'and', 'a', 'in', 'that', 'have', 'i', 'it', 'for', 'not', 'on', 'with', 'he', 'as', 'you', 'do', 'at']);
+            
+            // Count word frequencies
+            const wordCount = {};
+            words.forEach(word => {
+                if (word.length > 2 && !stopWords.has(word)) {
+                    wordCount[word] = (wordCount[word] || 0) + 1;
+                }
+            });
+            
+            // Sort by frequency and get top 10
+            return Object.entries(wordCount)
+                .sort(([,a], [,b]) => b - a)
+                .slice(0, 10)
+                .map(([word]) => word);
+        }
+
         async function analyzeVideoDetails(videoId) {
             try {
                 const response = await fetch(
@@ -414,11 +515,24 @@
 
                 if (!video) throw new Error('Video not found');
 
+                // Get transcript
+                const transcript = await getVideoTranscript(videoId);
+                
+                // Extract keywords from description and transcript
+                const descriptionKeywords = extractKeywordsFromText(video.snippet.description);
+                const transcriptKeywords = extractKeywordsFromText(transcript);
+
                 const analysis = {
                     basic: {
                         title: video.snippet.title,
                         publishedAt: new Date(video.snippet.publishedAt).toLocaleDateString(),
                         duration: parseDuration(video.contentDetails.duration),
+                    },
+                    transcript: transcript,
+                    keywords: {
+                        manualTags: video.snippet.tags || [],
+                        autoDescription: descriptionKeywords,
+                        autoTranscript: transcriptKeywords
                     },
                     metrics: {
                         views: parseInt(video.statistics.viewCount),
@@ -644,13 +758,49 @@
                         </div>
 
                         <div class="analysis-section">
-                            <h4>Content Analysis</h4>
-                            <div class="tag-analysis">
-                                ${analysis.content.tags.slice(0, 6).map(tag => `
-                                    <div class="analysis-tag">
-                                        <div>${tag}</div>
+                            <h4>Tag Analysis</h4>
+                            <div class="tags-container">
+                                <div class="tag-section">
+                                    <h5 class="tag-section-title">Manual Tags</h5>
+                                    <div class="tag-analysis">
+                                        ${analysis.keywords.manualTags.map(tag => `
+                                            <div class="analysis-tag manual-tag">
+                                                <div><i class="fas fa-tag"></i> ${tag}</div>
+                                            </div>
+                                        `).join('')}
                                     </div>
-                                `).join('')}
+                                </div>
+                                
+                                <div class="tag-section">
+                                    <h5 class="tag-section-title">Auto-Generated from Description</h5>
+                                    <div class="tag-analysis">
+                                        ${analysis.keywords.autoDescription.map(tag => `
+                                            <div class="analysis-tag auto-tag">
+                                                <div><i class="fas fa-robot"></i> ${tag}</div>
+                                            </div>
+                                        `).join('')}
+                                    </div>
+                                </div>
+                                
+                                <div class="tag-section">
+                                    <h5 class="tag-section-title">Generated from Transcript</h5>
+                                    <div class="tag-analysis">
+                                        ${analysis.keywords.autoTranscript.map(tag => `
+                                            <div class="analysis-tag transcript-tag">
+                                                <div><i class="fas fa-closed-captioning"></i> ${tag}</div>
+                                            </div>
+                                        `).join('')}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="analysis-section">
+                            <h4>Video Transcript</h4>
+                            <div class="transcript-container">
+                                <div class="transcript-content">
+                                    ${analysis.transcript}
+                                </div>
                             </div>
                         </div>
 
