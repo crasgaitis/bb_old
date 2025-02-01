@@ -1,3 +1,9 @@
+# ignore videos
+reels/
+englishwithlucy/
+korean_hamin/
+nasa/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
