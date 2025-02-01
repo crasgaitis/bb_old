@@ -1,4 +1,8 @@
 import base64
+from io import BytesIO
+
+from openai import Image
+import requests
 from yt_dlp import YoutubeDL
 from pydub.utils import make_chunks
 import os
@@ -70,6 +74,45 @@ def extract_comments(video_url):
         return comments
 
 def encode_image(image_path):
-    with open(image_path, "rb") as image_file:
+    response = requests.get(image_path)
+    img = Image.open(BytesIO(response.content))
+    with open(img, "rb") as image_file:
         return base64.b64encode(image_file.read()).decode('utf-8')
 
+
+
+
+import requests
+from PIL import Image
+from io import BytesIO
+import base64
+
+def process_thumbnail(video_id):
+    thumbnail_url = f"https://img.youtube.com/vi/{video_id}/maxresdefault.jpg"
+    
+    # Fetch the image
+    response = requests.get(thumbnail_url)
+    img = Image.open(BytesIO(response.content))
+
+    # Convert to RGB mode if it's not already (in case it's RGBA)
+    img = img.convert('RGB')
+
+    # Resize the image to 1024x1024 (or another appropriate size)
+    img = img.resize((1024, 1024), Image.LANCZOS)
+
+    # Save as PNG with optimization
+    img_buffer = BytesIO()
+    img.save(img_buffer, format='PNG', optimize=True, quality=85)
+    img_buffer.seek(0)
+
+    # Check if the size is under 4 MB, if not, reduce quality
+    while img_buffer.getbuffer().nbytes > 4 * 1024 * 1024:
+        img_buffer = BytesIO()
+        img.save(img_buffer, format='PNG', optimize=True, quality=quality)
+        img_buffer.seek(0)
+        quality -= 5
+
+    # Encode to base64
+    base64_image = base64.b64encode(img_buffer.getvalue()).decode('utf-8')
+
+    return base64_image
