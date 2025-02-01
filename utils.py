@@ -1,3 +1,4 @@
+from pydub.utils import make_chunks
 import os
 import speech_recognition as sr
 from pydub import AudioSegment
@@ -26,20 +27,33 @@ def write_transcription_to_file(text, output_file) -> None:
         f.write(text)
         
 # output_wav based on input_path
-def do_transcription(input_path, output_wav, language = 'english'):
-    # language = 'ko-KR'
-    # input_path = "korean_hamin/2024-03-27_13-04-49_UTC.mp4"
 
-    video_clip = VideoFileClip(input_path)
 
-    audio_clip = video_clip.audio
-    audio_clip.write_audiofile(output_wav)
+def do_transcription(input_path, output_txt, language='en'):
+    audio = AudioSegment.from_file(input_path)
+    
+    chunk_length_ms = 10 * 1000  
+    chunks = make_chunks(audio, chunk_length_ms)
 
-    audio_clip.close()
-    video_clip.close()
+    recognizer = sr.Recognizer()
+    
+    full_transcription = ""
 
-    wav_file = prepare_voice_file(output_wav)
-    with sr.AudioFile(wav_file) as source:
-        audio_data = sr.Recognizer().record(source)
-        text = transcribe_audio(audio_data, language)
-        write_transcription_to_file(text, "test.txt")
+    for i, chunk in enumerate(chunks):
+        chunk_filename = f"chunk_{i}.wav"
+        chunk.export(chunk_filename, format="wav")
+
+        with sr.AudioFile(chunk_filename) as source:
+            audio_data = recognizer.record(source)
+            try:
+                text = recognizer.recognize_google(audio_data, language=language)
+                full_transcription += text + " "
+            except sr.UnknownValueError:
+                print(f"Chunk {i}: Could not understand audio")
+            except sr.RequestError as e:
+                print(f"Chunk {i}: Request error: {e}")
+
+    with open(output_txt, 'w') as f:
+        f.write(full_transcription)
+
+    print(f"Transcription saved to {output_txt}")
