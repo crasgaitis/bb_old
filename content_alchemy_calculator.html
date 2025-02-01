@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Content Alchemy Calculator</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <h1 class="text-4xl font-bold text-blue-600 mb-8 text-center">Content Alchemy Calculator</h1>
+        
+        <!-- Analysis Input Section -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <h2 class="text-xl font-semibold mb-4">Content Ingredients</h2>
+                <div class="space-y-4">
+                    <input type="text" id="influencerInput" placeholder="YouTube Username" class="w-full p-2 border rounded">
+                    <input type="text" id="genreInput" placeholder="Desired Genres (comma-separated)" class="w-full p-2 border rounded">
+                    <textarea id="commentInput" placeholder="Paste Comments" class="w-full p-2 border rounded h-32"></textarea>
+                    <input type="file" id="videoUpload" accept="video/*" class="w-full">
+                    <textarea id="descriptionInput" placeholder="Describe your ideal video" class="w-full p-2 border rounded h-32"></textarea>
+                </div>
+                <button onclick="analyzeContent()" class="mt-4 bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700">Analyze</button>
+            </div>
+
+            <!-- Real-time Analysis Dashboard -->
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <h2 class="text-xl font-semibold mb-4">Content Insights</h2>
+                <div id="results" class="space-y-4">
+                    <div class="grid grid-cols-3 gap-4">
+                        <div class="p-3 bg-green-100 rounded text-center">
+                            <p class="text-sm">Engagement Score</p>
+                            <p id="engagementScore" class="text-2xl font-bold">-</p>
+                        </div>
+                        <div class="p-3 bg-purple-100 rounded text-center">
+                            <p class="text-sm">Virality Potential</p>
+                            <p id="viralityScore" class="text-2xl font-bold">-</p>
+                        </div>
+                        <div class="p-3 bg-yellow-100 rounded text-center">
+                            <p class="text-sm">Creativity Index</p>
+                            <p id="creativityScore" class="text-2xl font-bold">-</p>
+                        </div>
+                    </div>
+                    <canvas id="analysisChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI Recommendations Section -->
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <h2 class="text-xl font-semibold mb-4">AI Recommendations</h2>
+            <div id="recommendations" class="space-y-4">
+                <div class="ai-recommendation bg-gray-50 p-4 rounded animate-fade-in">
+                    <p class="text-gray-600">Analysis results will appear here...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let analysisChart = null;
+
+        async function analyzeContent() {
+            const inputs = {
+                influencer: document.getElementById('influencerInput').value,
+                genres: document.getElementById('genreInput').value.split(','),
+                comments: document.getElementById('commentInput').value,
+                video: document.getElementById('videoUpload').files[0],
+                description: document.getElementById('descriptionInput').value
+            };
+
+            // TODO: Replace with actual API calls
+            const analysisResults = {
+                engagement: Math.floor(Math.random() * 40 + 60),
+                virality: Math.floor(Math.random() * 40 + 60),
+                creativity: Math.floor(Math.random() * 40 + 60),
+                recommendations: [
+                    "Combine storytelling with trending visual effects",
+                    "Increase pacing in first 15 seconds",
+                    "Leverage current meme formats in your niche",
+                    "Optimize video length between 7-9 minutes"
+                ],
+                trends: ["Challenge Videos", "Educational Shorts", "AI Art Experiments"],
+                metrics: {
+                    engagementRate: 8.2,
+                    retentionPeak: "00:01:30",
+                    audienceDemographics: { GenZ: 65, Millennials: 25, Others: 10 }
+                }
+            };
+
+            updateDashboard(analysisResults);
+            updateRecommendations(analysisResults);
+            updateChart(analysisResults);
+        }
+
+        function updateDashboard(results) {
+            document.getElementById('engagementScore').textContent = results.engagement;
+            document.getElementById('viralityScore').textContent = results.virality;
+            document.getElementById('creativityScore').textContent = results.creativity;
+        }
+
+        function updateRecommendations(results) {
+            const container = document.getElementById('recommendations');
+            container.innerHTML = results.recommendations.map(rec => `
+                <div class="ai-recommendation bg-blue-50 p-4 rounded animate-fade-in">
+                    <p class="text-blue-800">✨ ${rec}</p>
+                </div>
+            `).join('');
+        }
+
+        function updateChart(results) {
+            const ctx = document.getElementById('analysisChart').getContext('2d');
+            if (analysisChart) analysisChart.destroy();
+
+            analysisChart = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: ['Engagement', 'Virality', 'Creativity', 'Trend Relevance', 'Production Quality'],
+                    datasets: [{
+                        label: 'Content Metrics',
+                        data: [results.engagement, results.virality, results.creativity, 75, 82],
+                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                        borderColor: 'rgb(54, 162, 235)',
+                        pointBackgroundColor: 'rgb(54, 162, 235)',
+                        pointBorderColor: '#fff',
+                    }]
+                },
+                options: {
+                    scales: {
+                        r: {
+                            beginAtZero: true,
+                            max: 100
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+
+    <style>
+        .animate-fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .ai-recommendation {
+            border-left: 4px solid #3B82F6;
+            transition: transform 0.2s;
+        }
+
+        .ai-recommendation:hover {
+            transform: translateX(5px);
+        }
+    </style>
+</body>
+</html>
