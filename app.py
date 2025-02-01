@@ -1,3 +1,5 @@
+# import runway
+# how to tell pydub fully qualified path name
 import whisper
 import os
 from utils import *
@@ -10,6 +12,8 @@ import shutil
 import glob
 
 # [os.remove(os.path.join('#reels', f)) for f in os.listdir('#reels') if os.path.isfile(os.path.join('#reels', f))]
+
+# model = runway.Model(url='https://api.runwayml.com/v1/models/stable-diffusion-v1-5')
 
 app = Flask(__name__)
 
@@ -48,8 +52,8 @@ def calculate():
             output_wav = "output.wav"
             
             post_filename = f"{post.date_utc.strftime('%Y-%m-%d_%H-%M-%S')}_{post.shortcode}"
-            mp4_input = os.path.join("nasa", post_filename + '.mp4')
-            
+            # mp4_input = os.path.join("nasa", post_filename + '.mp4')
+            mp4_input = "reels/2025-01-03_18-28-23_UTC.mp4"
             print(f"pATH {mp4_input}")
             
             do_transcription(mp4_input, output_wav, language='en-US')
@@ -58,6 +62,24 @@ def calculate():
             
             # display: 
             # user's thumbnail + post caption
+            
+            # get 
+
+
+#             input_params = {
+#                 'prompt': 'A serene landscape with a mountain lake at sunset, impressionist style',
+#                 'num_outputs': 1,
+#                 'guidance_scale': 7.5,
+#                 'num_inference_steps': 50
+#             }
+
+#             output = model.generate(input_params)
+
+# # Save the generated image
+# output['image'].save('generated_landscape.png')    
+            
+            
+            
         elif category == 'username':
             print(f'Username: {value}')
             
