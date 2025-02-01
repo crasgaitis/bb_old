@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Instagram Calculator</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+            margin: 0;
+        }
+        .calculator {
+            background-color: #333;
+            border-radius: 10px;
+            width: 350px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .calculator-display {
+            background-color: #4a4a4a;
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 15px;
+            color: white;
+            text-align: right;
+            min-height: 60px;
+            word-wrap: break-word;
+        }
+        .input-group {
+            display: flex;
+            margin-bottom: 10px;
+            gap: 5px;
+        }
+        .input-group button, .input-group select, .input-group input {
+            flex: 1;
+            padding: 8px;
+            border-radius: 4px;
+            border: none;
+        }
+        .calculator-buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 5px;
+            margin-bottom: 10px;
+        }
+        .calculator-buttons button, 
+        .calculator-buttons input[type="submit"] {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .calculator-buttons button:hover, 
+        .calculator-buttons input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+        .operator-buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 5px;
+            margin-bottom: 10px;
+        }
+        .operator-buttons button {
+            background-color: #ff9800;
+        }
+        .operator-buttons button:hover {
+            background-color: #e68a00;
+        }
+        #equals {
+            grid-column: span 4;
+            background-color: #2196F3;
+        }
+        #equals:hover {
+            background-color: #1e87db;
+        }
+    </style>
+    <script>
+        let inputCount = 0;
+        let equation = [];
+        let categorizedInputs = [];
+        const genres = {{ genres|tojson|safe }};
+
+        function addInput(type) {
+            if (inputCount < 4) {
+                const inputGroup = document.createElement('div');
+                inputGroup.className = 'input-group';
+                let input;
+
+                if (type === 'genre') {
+                    input = document.createElement('select');
+                    input.name = `input_${inputCount + 1}`;
+                    input.required = true;
+                
+                    genres.forEach(genre => {
+                        const option = document.createElement('option');
+                        option.value = genre;
+                        option.textContent = genre;
+                        input.appendChild(option);
+                    });
+                } else if (type === 'username') {
+                    input = document.createElement('input');
+                    input.type = 'text';
+                    input.name = `input_${inputCount + 1}`;
+                    input.placeholder = 'Instagram Username';
+                } else if (type === 'link') {
+                    input = document.createElement('input');
+                    input.type = 'url';
+                    input.name = `input_${inputCount + 1}`;
+                    input.placeholder = 'Instagram Reel Link';
+                }
+
+                input.addEventListener('change', function() {
+                    equation.push(this.value || this.placeholder);
+                    categorizedInputs.push({
+                        value: this.value || this.placeholder,
+                        category: type
+                    });
+                    updateDisplay();
+                });
+                inputGroup.appendChild(input);
+                document.getElementById('inputs').appendChild(inputGroup);
+                inputCount++;
+
+                updateDisplay();
+            }
+
+            if (inputCount >= 4) {
+                document.querySelectorAll('.input-type-btn').forEach(btn => btn.disabled = true);
+            }
+        }
+
+        function addOperator(op) {
+            equation.push(op);
+            updateDisplay();
+        }
+
+        function updateDisplay() {
+            const display = document.getElementById('display');
+            display.textContent = equation.join(' ');
+        }
+
+        function calculate() {
+            const form = document.getElementById('calculator-form');
+            const equationInput = document.createElement('input');
+            equationInput.type = 'hidden';
+            equationInput.name = 'equation';
+            equationInput.value = equation.join(' ');
+            form.appendChild(equationInput);
+
+            const categorizedInputsField = document.createElement('input');
+            categorizedInputsField.type = 'hidden';
+            categorizedInputsField.name = 'categorized_inputs';
+            categorizedInputsField.value = JSON.stringify(categorizedInputs);
+            form.appendChild(categorizedInputsField);
+
+            form.submit();
+        }
+    </script>
+</head>
+<body>
+    <div class="calculator">
+        <div class="calculator-display" id="display"></div>
+        
+        <form id="calculator-form" method="POST">
+            <div id="inputs"></div>
+
+            <div class="calculator-buttons">
+                <button type="button" class="input-type-btn" onclick="addInput('genre')">Genre</button>
+                <button type="button" class="input-type-btn" onclick="addInput('username')">Username</button>
+                <button type="button" class="input-type-btn" onclick="addInput('link')">Link</button>
+            </div>
+
+            <div class="operator-buttons">
+                <button type="button" onclick="addOperator('+')">+</button>
+                <button type="button" onclick="addOperator('-')">-</button>
+                <button type="button" onclick="addOperator('*')">*</button>
+                <button type="button" onclick="addOperator('/')">/</button>
+            </div>
+
+            <div class="calculator-buttons">
+                <button type="button" id="equals" onclick="calculate()">=</button>
+            </div>
+        </form>
+    </div>
+</body>
+</html>
