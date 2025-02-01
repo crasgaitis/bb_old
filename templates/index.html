@@ -6,79 +6,153 @@
     <style>
         body {
             font-family: 'Arial', sans-serif;
+            min-height: 100vh;
+            background-color: #0f172a;
+            margin: 0;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            background-color: #f0f0f0;
-            margin: 0;
+            padding: 20px;
         }
         .calculator {
-            background-color: #333;
-            border-radius: 10px;
-            width: 350px;
-            padding: 20px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            background: linear-gradient(145deg, #1e293b, #334155);
+            border-radius: 24px;
+            width: 100%;
+            max-width: 600px;
+            padding: 24px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
         }
         .calculator-display {
-            background-color: #4a4a4a;
-            border-radius: 5px;
-            padding: 10px;
+            background: linear-gradient(145deg, #0f172a, #1e293b);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            color: white;
+            min-height: 100px;
+            position: relative;
+            overflow: hidden;
+        }
+        .calculator-display::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6, #ec4899);
+            opacity: 0.5;
+        }
+        .input-history {
             margin-bottom: 15px;
+            font-size: 14px;
+            color: #94a3b8;
+        }
+        .input-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 8px 12px;
+            border-radius: 8px;
+            margin-bottom: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .input-tag {
+            background: rgba(59, 130, 246, 0.2);
+            color: #93c5fd;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            margin-right: 8px;
+        }
+        .current-equation {
+            font-size: 24px;
+            font-weight: bold;
             color: white;
             text-align: right;
-            min-height: 60px;
             word-wrap: break-word;
         }
         .input-group {
             display: flex;
-            margin-bottom: 10px;
-            gap: 5px;
+            gap: 8px;
+            margin-bottom: 12px;
         }
-        .input-group button, .input-group select, .input-group input {
-            flex: 1;
-            padding: 8px;
-            border-radius: 4px;
+        select, input, button {
             border: none;
+            border-radius: 12px;
+            padding: 12px;
+            font-size: 14px;
+            background: #1e293b;
+            color: white;
+            outline: none;
+            transition: all 0.3s ease;
         }
-        .calculator-buttons {
+        select, input {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        select:focus, input:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+        }
+        .calculator-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 5px;
-            margin-bottom: 10px;
+            gap: 8px;
+            margin-bottom: 12px;
         }
-        .calculator-buttons button, 
-        .calculator-buttons input[type="submit"] {
-            background-color: #4CAF50;
+        .btn-genre {
+            background: linear-gradient(145deg, #1e293b, #334155);
             color: white;
             border: none;
-            padding: 10px;
-            border-radius: 5px;
+            padding: 12px;
+            border-radius: 12px;
             cursor: pointer;
-            transition: background-color 0.3s;
+            transition: all 0.3s ease;
         }
-        .calculator-buttons button:hover, 
-        .calculator-buttons input[type="submit"]:hover {
-            background-color: #45a049;
+        .btn-operator {
+            background: linear-gradient(145deg, #7c3aed, #8b5cf6);
         }
-        .operator-buttons {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 5px;
-            margin-bottom: 10px;
+        .btn-genre:hover, .btn-operator:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
-        .operator-buttons button {
-            background-color: #ff9800;
-        }
-        .operator-buttons button:hover {
-            background-color: #e68a00;
+        .btn-genre:active, .btn-operator:active {
+            transform: translateY(0);
         }
         #equals {
             grid-column: span 4;
-            background-color: #2196F3;
+            background: linear-gradient(145deg, #3b82f6, #2563eb);
+            color: white;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
         #equals:hover {
-            background-color: #1e87db;
+            background: linear-gradient(145deg, #2563eb, #1d4ed8);
+        }
+        .remove-btn {
+            background: none;
+            border: none;
+            color: #ef4444;
+            cursor: pointer;
+            padding: 4px;
+        }
+        .remove-btn:hover {
+            color: #dc2626;
+        }
+        @media (max-width: 640px) {
+            .calculator {
+                padding: 16px;
+            }
+            .calculator-grid {
+                gap: 6px;
+            }
+            button {
+                padding: 10px;
+                font-size: 13px;
+            }
         }
     </style>
     <script>
@@ -117,14 +191,32 @@
                 }
 
                 input.addEventListener('change', function() {
-                    equation.push(this.value || this.placeholder);
+                    const value = this.value || this.placeholder;
+                    equation.push(value);
                     categorizedInputs.push({
-                        value: this.value || this.placeholder,
+                        value: value,
                         category: type
                     });
                     updateDisplay();
                 });
+                
+                const removeBtn = document.createElement('button');
+                removeBtn.type = 'button';
+                removeBtn.className = 'remove-btn';
+                removeBtn.innerHTML = '×';
+                removeBtn.onclick = function() {
+                    inputGroup.remove();
+                    inputCount--;
+                    document.querySelectorAll('.btn-input').forEach(btn => btn.disabled = false);
+                    // Remove from equation and categorizedInputs
+                    const index = Array.from(inputGroup.parentElement.children).indexOf(inputGroup);
+                    equation = equation.filter((_, i) => i !== index);
+                    categorizedInputs = categorizedInputs.filter((_, i) => i !== index);
+                    updateDisplay();
+                };
+
                 inputGroup.appendChild(input);
+                inputGroup.appendChild(removeBtn);
                 document.getElementById('inputs').appendChild(inputGroup);
                 inputCount++;
 
@@ -132,7 +224,7 @@
             }
 
             if (inputCount >= 4) {
-                document.querySelectorAll('.input-type-btn').forEach(btn => btn.disabled = true);
+                document.querySelectorAll('.btn-input').forEach(btn => btn.disabled = true);
             }
         }
 
@@ -143,7 +235,20 @@
 
         function updateDisplay() {
             const display = document.getElementById('display');
+            const history = document.getElementById('input-history');
+            
+            // Update equation display
             display.textContent = equation.join(' ');
+            
+            // Update input history
+            history.innerHTML = categorizedInputs.map(input => `
+                <div class="input-item">
+                    <span>
+                        <span class="input-tag">${input.category}</span>
+                        ${input.value}
+                    </span>
+                </div>
+            `).join('');
         }
 
         function calculate() {
@@ -166,27 +271,34 @@
 </head>
 <body>
     <div class="calculator">
-        <div class="calculator-display" id="display"></div>
+        <div class="calculator-display">
+            <div class="input-history" id="input-history"></div>
+            <div class="current-equation" id="display"></div>
+        </div>
         
         <form id="calculator-form" method="POST">
             <div id="inputs"></div>
 
-            <div class="calculator-buttons">
-                <button type="button" class="input-type-btn" onclick="addInput('genre')">Genre</button>
-                <button type="button" class="input-type-btn" onclick="addInput('username')">Username</button>
-                <button type="button" class="input-type-btn" onclick="addInput('link')">Link</button>
+            <div class="calculator-grid">
+                {% for genre in genres %}
+                <button type="button" class="btn-genre" onclick="addInput('genre')">{{ genre }}</button>
+                {% endfor %}
             </div>
 
-            <div class="operator-buttons">
-                <button type="button" onclick="addOperator('+')">+</button>
-                <button type="button" onclick="addOperator('-')">-</button>
-                <button type="button" onclick="addOperator('*')">*</button>
-                <button type="button" onclick="addOperator('/')">/</button>
+            <div class="calculator-grid">
+                <button type="button" class="btn-genre btn-input" onclick="addInput('username')">Username</button>
+                <button type="button" class="btn-genre btn-input" onclick="addInput('link')">Link</button>
+                {% for op in operators %}
+                <button type="button" class="btn-genre btn-operator" onclick="addOperator('{{ op }}')">{{ op }}</button>
+                {% endfor %}
             </div>
 
-            <div class="calculator-buttons">
-                <button type="button" id="equals" onclick="calculate()">=</button>
-            </div>
+            <button type="button" id="equals" onclick="calculate()">
+                Generate Ideas
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+            </button>
         </form>
     </div>
 </body>
