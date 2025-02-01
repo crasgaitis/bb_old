@@ -1,8 +1,12 @@
+import base64
+from yt_dlp import YoutubeDL
 from pydub.utils import make_chunks
 import os
 import speech_recognition as sr
 from pydub import AudioSegment
 from moviepy import *
+
+AudioSegment.converter = '/C:/Program Files/ffmpeg/ffmpeg'
 
 def prepare_voice_file(path: str) -> str:
     if os.path.splitext(path)[1] == '.wav':
@@ -57,3 +61,15 @@ def do_transcription(input_path, output_txt, language='en'):
         f.write(full_transcription)
 
     print(f"Transcription saved to {output_txt}")
+
+def extract_comments(video_url):
+    opts = {"getcomments": True}
+    with YoutubeDL(opts) as yt:
+        info = yt.extract_info(video_url, download=False)
+        comments = info["comments"]
+        return comments
+
+def encode_image(image_path):
+    with open(image_path, "rb") as image_file:
+        return base64.b64encode(image_file.read()).decode('utf-8')
+
