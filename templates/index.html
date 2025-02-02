@@ -109,8 +109,17 @@
             cursor: pointer;
             transition: all 0.3s ease;
         }
+        .btn-input {
+            background: linear-gradient(145deg, #22c55e, #16a34a);
+            color: white;
+        }
         .btn-operator {
-            background: linear-gradient(145deg, #7c3aed, #8b5cf6);
+            background: linear-gradient(145deg, #f97316, #ea580c);
+            color: white;
+        }
+        .btn-genre:not(.btn-input):not(.btn-operator) {
+            background: linear-gradient(145deg, #334155, #475569);
+            color: white;
         }
         .btn-genre:hover, .btn-operator:hover {
             transform: translateY(-2px);
