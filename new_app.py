@@ -9,7 +9,7 @@ from youtube_transcript_api import YouTubeTranscriptApi
 from flask import Flask, render_template, request, redirect, url_for
 import json
 
-openai_key = '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'
+openai_key = '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'
 
 client = OpenAI(api_key=openai_key)
 
