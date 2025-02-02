@@ -9,7 +9,7 @@ from youtube_transcript_api import YouTubeTranscriptApi
 from flask import Flask, render_template, request, redirect, url_for
 import json
 
-openai_key = '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'
+openai_key = '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'
 
 client = OpenAI(api_key=openai_key)
 
@@ -85,11 +85,14 @@ def calculate():
         
         # encoded_images = [encode_image(img_path) for img_path in images]
 
-    if sub_flag:
-        text_prompt = str(text_input) + "Make a new video idea based on combining the following ideas, comments, and other videos:" + str(genres) + str(commentss) + str(transcripts)
+    if not sub_flag:
+        text_prompt = str(text_input) + "Make a new video idea based on combining the following ideas, comments, and other videos:" + str(genres) + str(transcripts) + str(commentss)
     else: 
-        text_prompt = str(text_input) + "Make a new video idea that does not incorporate " + str(genres) + ", and instead is about combining: " + str(commentss) + str(transcripts)
+        text_prompt = str(text_input) + "Make a new video idea that does not incorporate " + str(genres) + ", and instead is about combining: " + str(transcripts) + str(commentss)
     
+    text_prompt = text_prompt[:2040]
+    print(text_prompt)
+
     user_message = [{
         "role": "user",
         "content": [
@@ -103,7 +106,7 @@ def calculate():
     response = client.chat.completions.create(
         model="gpt-4o",
         messages=user_message,
-        max_tokens=300
+        max_tokens=100
     )
 
     print(response.choices[0].message.content)
@@ -119,7 +122,7 @@ def calculate():
     response2 = client.chat.completions.create(
         model="gpt-4o",
         messages= user_message2,
-        max_tokens=700
+        max_tokens=200
     )
     
     script = response2.choices[0].message.content
