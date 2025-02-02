@@ -27,7 +27,6 @@
             border-radius: 16px;
             padding: 20px;
             margin-bottom: 20px;
-            color: white;
             min-height: 200px;
             position: relative;
             overflow: hidden;
@@ -42,37 +41,28 @@
             background: linear-gradient(90deg, #3b82f6, #8b5cf6, #ec4899);
             opacity: 0.5;
         }
-        .input-history {
-            margin-bottom: 15px;
-            font-size: 14px;
-            color: #94a3b8;
-        }
-        .input-item {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 8px 12px;
-            border-radius: 8px;
-            margin-bottom: 6px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
         .input-group {
             display: flex;
             gap: 8px;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
         }
-        input {
+        .input-field {
             flex: 1;
-            padding: 12px;
-            border-radius: 12px;
-            border: 1px solid #e2e8f0;
+            padding: 12px 16px;
+            border-radius: 16px;
+            border: none;
             background: white;
             color: #1e293b;
-            font-size: 14px;
+            font-size: 16px;
             outline: none;
         }
-        input::placeholder {
-            color: #94a3b8;
+        .remove-btn {
+            background: none;
+            border: none;
+            color: #ef4444;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 0 8px;
         }
         .calculator-grid {
             display: grid;
@@ -80,95 +70,60 @@
             gap: 8px;
             margin-bottom: 12px;
         }
-        .btn-genre {
-            background: linear-gradient(145deg, #334155, #475569);
-            color: white;
+        .btn {
             border: none;
-            padding: 12px;
-            border-radius: 12px;
+            padding: 16px;
+            border-radius: 16px;
+            font-size: 16px;
+            color: white;
             cursor: pointer;
             transition: all 0.3s ease;
-            font-size: 16px;
         }
-        .btn-input {
-            background: linear-gradient(145deg, #22c55e, #16a34a);
+        .btn:active {
+            transform: scale(0.98);
+        }
+        .btn-genre {
+            background: linear-gradient(145deg, #334155, #475569);
         }
         .btn-operator {
             background: linear-gradient(145deg, #f97316, #ea580c);
         }
+        .btn-input {
+            background: linear-gradient(145deg, #22c55e, #16a34a);
+        }
         .generate-btn {
-            width: 200px;
-            margin: 0 auto;
-            display: block;
             background: linear-gradient(145deg, #3b82f6, #2563eb);
+            padding: 16px 32px;
+            border-radius: 16px;
             color: white;
             border: none;
-            padding: 12px 24px;
-            border-radius: 12px;
+            font-size: 16px;
             cursor: pointer;
             transition: all 0.3s ease;
-            font-size: 16px;
             display: flex;
             align-items: center;
-            justify-content: center;
             gap: 8px;
+            margin: 24px auto 0;
         }
-        .btn-genre:hover, .generate-btn:hover {
+        .generate-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        }
-        .remove-btn {
-            background: none;
-            border: none;
-            color: #ef4444;
-            cursor: pointer;
-            padding: 4px;
-        }
-        @media (max-width: 640px) {
-            .calculator {
-                padding: 16px;
-            }
-            .calculator-grid {
-                gap: 6px;
-            }
-            button {
-                padding: 10px;
-                font-size: 13px;
-            }
         }
     </style>
     <script>
         let inputCount = 0;
         let equation = [];
         let categorizedInputs = [];
-        const genres = {{ genres|tojson|safe }};
 
-        function addInput(type) {
+        function addInput(type, value) {
             if (inputCount < 4) {
                 const inputGroup = document.createElement('div');
                 inputGroup.className = 'input-group';
-                let input;
 
-                if (type === 'genre') {
-                    input = document.createElement('input');
-                    input.type = 'text';
-                    input.value = type;
-                    input.readOnly = true;
-                } else if (type === 'username' || type === 'link') {
-                    input = document.createElement('input');
-                    input.type = type === 'link' ? 'url' : 'text';
-                    input.placeholder = type === 'link' ? 'YouTube Reel Link' : 'YouTube Username';
-                }
-
-                input.name = `input_${inputCount + 1}`;
-                input.addEventListener('change', function() {
-                    equation.push(this.value || this.placeholder);
-                    categorizedInputs.push({
-                        value: this.value || this.placeholder,
-                        category: type
-                    });
-                    updateDisplay();
-                });
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.className = 'input-field';
+                input.value = value || type;
+                input.readOnly = true;
 
                 const removeBtn = document.createElement('button');
                 removeBtn.type = 'button';
@@ -177,26 +132,22 @@
                 removeBtn.onclick = function() {
                     inputGroup.remove();
                     inputCount--;
-                    updateDisplay();
                 };
 
                 inputGroup.appendChild(input);
                 inputGroup.appendChild(removeBtn);
                 document.querySelector('.calculator-display').appendChild(inputGroup);
                 inputCount++;
+
+                categorizedInputs.push({
+                    value: value || type,
+                    category: type
+                });
             }
         }
 
         function addOperator(op) {
             equation.push(op);
-            updateDisplay();
-        }
-
-        function updateDisplay() {
-            const display = document.getElementById('equation-display');
-            if (display) {
-                display.textContent = equation.join(' ');
-            }
         }
 
         function calculate() {
@@ -220,36 +171,34 @@
 <body>
     <div class="calculator">
         <div class="calculator-display">
-            <div id="equation-display" class="current-equation"></div>
         </div>
         
         <form id="calculator-form" method="POST">
-            <!-- First row - Genres -->
+            <!-- First row -->
             <div class="calculator-grid">
-                {% for genre in genres[:4] %}
-                <button type="button" class="btn-genre" onclick="addInput('genre')">{{ genre }}</button>
-                {% endfor %}
+                <button type="button" class="btn btn-genre" onclick="addInput('genre', 'Beauty')">Beauty</button>
+                <button type="button" class="btn btn-genre" onclick="addInput('genre', 'Comedy')">Comedy</button>
+                <button type="button" class="btn btn-genre" onclick="addInput('genre', 'Fashion')">Fashion</button>
+                <button type="button" class="btn btn-genre" onclick="addInput('genre', 'Fitness')">Fitness</button>
             </div>
 
-            <!-- Second row - Food, Travel, *, / -->
+            <!-- Second row -->
             <div class="calculator-grid">
-                <button type="button" class="btn-genre" onclick="addInput('genre')">Food</button>
-                <button type="button" class="btn-genre" onclick="addInput('genre')">Travel</button>
-                <button type="button" class="btn-genre btn-operator" onclick="addOperator('*')">*</button>
-                <button type="button" class="btn-genre btn-operator" onclick="addOperator('/')">/</button>
+                <button type="button" class="btn btn-genre" onclick="addInput('genre', 'Food')">Food</button>
+                <button type="button" class="btn btn-genre" onclick="addInput('genre', 'Travel')">Travel</button>
+                <button type="button" class="btn btn-operator" onclick="addOperator('*')">*</button>
+                <button type="button" class="btn btn-operator" onclick="addOperator('/')">/</button>
             </div>
 
-            <!-- Third row - Username, Link, +, - -->
+            <!-- Third row -->
             <div class="calculator-grid">
-                <button type="button" class="btn-genre btn-input" onclick="addInput('username')">Username</button>
-                <button type="button" class="btn-genre btn-input" onclick="addInput('link')">Link</button>
-                <button type="button" class="btn-genre btn-operator" onclick="addOperator('+')">+</button>
-                <button type="button" class="btn-genre btn-operator" onclick="addOperator('-')">-</button>
+                <button type="button" class="btn btn-input" onclick="addInput('username')">Username</button>
+                <button type="button" class="btn btn-input" onclick="addInput('link')">Link</button>
+                <button type="button" class="btn btn-operator" onclick="addOperator('+')">+</button>
+                <button type="button" class="btn btn-operator" onclick="addOperator('-')">-</button>
             </div>
 
-            <div style="height: 12px;"></div>
-
-            <!-- Generate Button -->
+            <!-- Generate button -->
             <button type="button" class="generate-btn" onclick="calculate()">
                 Generate Ideas
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
