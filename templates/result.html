@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Generated Results</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            min-height: 100vh;
+            background-color: #0f172a;
+            margin: 0;
+            padding: 20px;
+            color: white;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+        .results-card {
+            background: linear-gradient(145deg, #1e293b, #334155);
+            border-radius: 24px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        .results-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6, #ec4899);
+            opacity: 0.5;
+        }
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 16px;
+            color: #e2e8f0;
+        }
+        .equation {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            font-family: monospace;
+        }
+        .inputs-list {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 24px 0;
+        }
+        .input-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+        }
+        .category-tag {
+            background: rgba(59, 130, 246, 0.2);
+            color: #93c5fd;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.875rem;
+            margin-right: 12px;
+        }
+        .generated-content {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            line-height: 1.6;
+        }
+        .thumbnail {
+            width: 100%;
+            border-radius: 12px;
+            margin-top: 16px;
+        }
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(145deg, #3b82f6, #2563eb);
+            color: white;
+            text-decoration: none;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        .back-button:hover {
+            background: linear-gradient(145deg, #2563eb, #1d4ed8);
+            transform: translateY(-2px);
+        }
+        pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 16px;
+            border-radius: 8px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="results-card">
+            <h1 class="section-title">Generated Results</h1>
+            
+            <div class="equation">
+                Equation: {{ equation }}
+            </div>
+
+            <h2 class="section-title">Input Components</h2>
+            <ul class="inputs-list">
+                {% for input in inputs %}
+                <li class="input-item">
+                    <span class="category-tag">{{ input.category }}</span>
+                    <span>{{ input.value }}</span>
+                </li>
+                {% endfor %}
+            </ul>
+
+            <h2 class="section-title">Generated Content</h2>
+            <div class="generated-content">
+                <h3 class="section-title">Video Idea</h3>
+                <p>{{ idea }}</p>
+            </div>
+
+            <div class="generated-content">
+                <h3 class="section-title">Script</h3>
+                <pre>{{ script }}</pre>
+            </div>
+
+            {% if image_url %}
+            <h2 class="section-title">Generated Thumbnail</h2>
+            <img src="{{ image_url }}" alt="Generated thumbnail" class="thumbnail">
+            {% endif %}
+        </div>
+
+        <a href="/" class="back-button">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M19 12H5M12 19l-7-7 7-7"/>
+            </svg>
+            Back to Calculator
+        </a>
+    </div>
+</body>
+</html>
