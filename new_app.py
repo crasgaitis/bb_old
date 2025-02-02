@@ -9,7 +9,7 @@ from youtube_transcript_api import YouTubeTranscriptApi
 from flask import Flask, render_template, request, redirect, url_for
 import json
 
-openai_key = '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'
+openai_key = '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'
 
 client = OpenAI(api_key=openai_key)
 
@@ -35,6 +35,10 @@ def index():
 def calculate():
     equation = request.args.get('equation', 'No equation provided')
     categorized_inputs = json.loads(request.args.get('categorized_inputs', '[]'))
+
+    print(equation)
+    if '-' in equation:
+        print('subtraction')
 
     input_dict = {item['value']: item['category'] for item in categorized_inputs}
     
