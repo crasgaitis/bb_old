@@ -118,7 +118,6 @@ def calculate():
         ]
     }]
     
-    
     response2 = client.chat.completions.create(
         model="gpt-4o",
         messages= user_message2,
@@ -126,6 +125,21 @@ def calculate():
     )
     
     script = response2.choices[0].message.content
+
+    user_message4 = [{
+    "role": "user",
+    "content": [
+        {"type": "text", "text": f"Give a list of brands I could work with if I make this kind of YouTube video: {response.choices[0].message.content}"},
+    ]
+    }]
+    
+    response4 = client.chat.completions.create(
+        model="gpt-4o",
+        messages= user_message4,
+        max_tokens=200
+    )
+    
+    brands_list = response4.choices[0].message.content
     
     text = f"Make a YouTube thumbnail for this: {response.choices[0].message.content}. No text!"
     response3 = client.images.generate(
@@ -164,7 +178,7 @@ def calculate():
     print(input_dict)    
     return render_template('result.html', equation=equation, inputs=categorized_inputs, 
                            image_url=image_url, idea=response.choices[0].message.content,
-                           script=script)
+                           script=script, brands_list=brands_list)
 
 if __name__ == '__main__':
     app.run(debug=True, port=5001)
