@@ -47,7 +47,7 @@
             margin-bottom: 10px;
         }
         .input-field {
-            flex: 1;
+            width: 100%;
             padding: 12px 16px;
             border-radius: 16px;
             border: none;
@@ -55,6 +55,14 @@
             color: #1e293b;
             font-size: 16px;
             outline: none;
+            box-sizing: border-box;
+        }
+        .btn-input {
+            padding: 0;
+            overflow: hidden;
+        }
+        .btn-input input {
+            border-radius: inherit;
         }
         .remove-btn {
             background: none;
@@ -192,8 +200,12 @@
 
             <!-- Third row -->
             <div class="calculator-grid">
-                <button type="button" class="btn btn-input" onclick="addInput('username')">Username</button>
-                <button type="button" class="btn btn-input" onclick="addInput('link')">Link</button>
+                <div class="btn btn-input">
+                    <input type="text" class="input-field" placeholder="Username" onchange="addInput('username', this.value)">
+                </div>
+                <div class="btn btn-input">
+                    <input type="url" class="input-field" placeholder="Link" onchange="addInput('link', this.value)">
+                </div>
                 <button type="button" class="btn btn-operator" onclick="addOperator('+')">+</button>
                 <button type="button" class="btn btn-operator" onclick="addOperator('-')">-</button>
             </div>
