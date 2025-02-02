@@ -47,7 +47,7 @@
             margin-bottom: 10px;
         }
         .input-field {
-            width: 100%;
+            flex: 1;
             padding: 12px 16px;
             border-radius: 16px;
             border: none;
@@ -55,14 +55,6 @@
             color: #1e293b;
             font-size: 16px;
             outline: none;
-            box-sizing: border-box;
-        }
-        .btn-input {
-            padding: 0;
-            overflow: hidden;
-        }
-        .btn-input input {
-            border-radius: inherit;
         }
         .remove-btn {
             background: none;
@@ -122,7 +114,43 @@
         let equation = [];
         let categorizedInputs = [];
 
-        function addInput(type, value) {
+        function promptInput(type) {
+            if (inputCount < 4) {
+                const inputGroup = document.createElement('div');
+                inputGroup.className = 'input-group';
+
+                const input = document.createElement('input');
+                input.type = type === 'link' ? 'url' : 'text';
+                input.className = 'input-field';
+                input.placeholder = type === 'link' ? 'Enter YouTube Link' : 'Enter Username';
+
+                const removeBtn = document.createElement('button');
+                removeBtn.type = 'button';
+                removeBtn.className = 'remove-btn';
+                removeBtn.innerHTML = '×';
+                removeBtn.onclick = function() {
+                    inputGroup.remove();
+                    inputCount--;
+                };
+
+                input.onchange = function() {
+                    if (this.value) {
+                        categorizedInputs.push({
+                            value: this.value,
+                            category: type
+                        });
+                    }
+                };
+
+                inputGroup.appendChild(input);
+                inputGroup.appendChild(removeBtn);
+                document.querySelector('.calculator-display').appendChild(inputGroup);
+                input.focus();
+                inputCount++;
+            }
+        }
+
+        function addGenre(genre) {
             if (inputCount < 4) {
                 const inputGroup = document.createElement('div');
                 inputGroup.className = 'input-group';
@@ -130,7 +158,7 @@
                 const input = document.createElement('input');
                 input.type = 'text';
                 input.className = 'input-field';
-                input.value = value || type;
+                input.value = genre;
                 input.readOnly = true;
 
                 const removeBtn = document.createElement('button');
@@ -148,8 +176,8 @@
                 inputCount++;
 
                 categorizedInputs.push({
-                    value: value || type,
-                    category: type
+                    value: genre,
+                    category: 'genre'
                 });
             }
         }
@@ -184,28 +212,24 @@
         <form id="calculator-form" method="POST">
             <!-- First row -->
             <div class="calculator-grid">
-                <button type="button" class="btn btn-genre" onclick="addInput('genre', 'Beauty')">Beauty</button>
-                <button type="button" class="btn btn-genre" onclick="addInput('genre', 'Comedy')">Comedy</button>
-                <button type="button" class="btn btn-genre" onclick="addInput('genre', 'Fashion')">Fashion</button>
-                <button type="button" class="btn btn-genre" onclick="addInput('genre', 'Fitness')">Fitness</button>
+                <button type="button" class="btn btn-genre" onclick="addGenre('Beauty')">Beauty</button>
+                <button type="button" class="btn btn-genre" onclick="addGenre('Comedy')">Comedy</button>
+                <button type="button" class="btn btn-genre" onclick="addGenre('Fashion')">Fashion</button>
+                <button type="button" class="btn btn-genre" onclick="addGenre('Fitness')">Fitness</button>
             </div>
 
             <!-- Second row -->
             <div class="calculator-grid">
-                <button type="button" class="btn btn-genre" onclick="addInput('genre', 'Food')">Food</button>
-                <button type="button" class="btn btn-genre" onclick="addInput('genre', 'Travel')">Travel</button>
+                <button type="button" class="btn btn-genre" onclick="addGenre('Food')">Food</button>
+                <button type="button" class="btn btn-genre" onclick="addGenre('Travel')">Travel</button>
                 <button type="button" class="btn btn-operator" onclick="addOperator('*')">*</button>
                 <button type="button" class="btn btn-operator" onclick="addOperator('/')">/</button>
             </div>
 
             <!-- Third row -->
             <div class="calculator-grid">
-                <div class="btn btn-input">
-                    <input type="text" class="input-field" placeholder="Username" onchange="addInput('username', this.value)">
-                </div>
-                <div class="btn btn-input">
-                    <input type="url" class="input-field" placeholder="Link" onchange="addInput('link', this.value)">
-                </div>
+                <button type="button" class="btn btn-input" onclick="promptInput('username')">Username</button>
+                <button type="button" class="btn btn-input" onclick="promptInput('link')">Link</button>
                 <button type="button" class="btn btn-operator" onclick="addOperator('+')">+</button>
                 <button type="button" class="btn btn-operator" onclick="addOperator('-')">-</button>
             </div>
