@@ -73,74 +73,74 @@ def calculate():
         #     print(f'Username: {value}')
         
         # encoded_images = [encode_image(img_path) for img_path in images]
-        text_prompt = "Make a new video idea based on combining the following ideas, comments, and other videos:" + str(genres) + str(commentss) + str(transcripts)
-        user_message = [{
-            "role": "user",
-            "content": [
-                {"type": "text", "text": text_prompt},
-                {
-                    "type": "image_url",
-                    "image_url": {"url": images[0]}
-                }
-            ]
-        }]
-        response = client.chat.completions.create(
-            model="gpt-4o",
-            messages=user_message,
-            max_tokens=300
-        )
+    text_prompt = "Make a new video idea based on combining the following ideas, comments, and other videos:" + str(genres) + str(commentss) + str(transcripts)
+    user_message = [{
+        "role": "user",
+        "content": [
+            {"type": "text", "text": text_prompt},
+            {
+                "type": "image_url",
+                "image_url": {"url": images[0]}
+            }
+        ]
+    }]
+    response = client.chat.completions.create(
+        model="gpt-4o",
+        messages=user_message,
+        max_tokens=300
+    )
 
-        print(response.choices[0].message.content)
-        
-        user_message2 = [{
-            "role": "user",
-            "content": [
-                {"type": "text", "text": f"Make a video script for YouTube for this: {response.choices[0].message.content}"},
-            ]
-        }]
-        
-        
-        response2 = client.chat.completions.create(
-            model="gpt-4o",
-            messages= user_message2,
-            max_tokens=700
-        )
-        
-        script = response2.choices[0].message.content
-        
-        text = f"Make a YouTube thumbnail for this: {response.choices[0].message.content}. No text!"
-        response3 = client.images.generate(
-            model="dall-e-3",
-            prompt=text,
-            size="1024x1024",
-            quality="standard",
-            n=1
-        )
-        image_url = response3.data[0].url
-        print(image_url)
-        # print('test')
-        # API_KEY = "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"
-        # API_HOST = 'https://api.stability.ai'
-        
-        # url = f"{API_HOST}/v1/generation/stable-diffusion-xl-1024-v1-0/image-to-image"
-        # headers = {
-        #     "Accept": "application/json",
-        #     "Authorization": f"Bearer {API_KEY}"
-        # }
-        # payload = {
-        #     "text_prompts": [{"text": f"Make a new thumbnail that is about {response.choices[0].message.content}." }],
-        #     "image_strength": 0.35,
-        #     "steps": 50,
-        # }
+    print(response.choices[0].message.content)
+    
+    user_message2 = [{
+        "role": "user",
+        "content": [
+            {"type": "text", "text": f"Make a video script for YouTube for this: {response.choices[0].message.content}"},
+        ]
+    }]
+    
+    
+    response2 = client.chat.completions.create(
+        model="gpt-4o",
+        messages= user_message2,
+        max_tokens=700
+    )
+    
+    script = response2.choices[0].message.content
+    
+    text = f"Make a YouTube thumbnail for this: {response.choices[0].message.content}. No text!"
+    response3 = client.images.generate(
+        model="dall-e-3",
+        prompt=text,
+        size="1024x1024",
+        quality="standard",
+        n=1
+    )
+    image_url = response3.data[0].url
+    print(image_url)
+    # print('test')
+    # API_KEY = "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"
+    # API_HOST = 'https://api.stability.ai'
+    
+    # url = f"{API_HOST}/v1/generation/stable-diffusion-xl-1024-v1-0/image-to-image"
+    # headers = {
+    #     "Accept": "application/json",
+    #     "Authorization": f"Bearer {API_KEY}"
+    # }
+    # payload = {
+    #     "text_prompts": [{"text": f"Make a new thumbnail that is about {response.choices[0].message.content}." }],
+    #     "image_strength": 0.35,
+    #     "steps": 50,
+    # }
 
-        # response = requests.post(url, headers=headers, json=payload)
+    # response = requests.post(url, headers=headers, json=payload)
 
-        # data = response.json()
-        # print(data)
-        # image_data = base64.b64decode(data["artifacts"][0]["base64"])
-        
-        # image = Image.open(io.BytesIO(data))
-        # image.save("generated_image.png")
+    # data = response.json()
+    # print(data)
+    # image_data = base64.b64decode(data["artifacts"][0]["base64"])
+    
+    # image = Image.open(io.BytesIO(data))
+    # image.save("generated_image.png")
     
     print(input_dict)    
     return render_template('result.html', equation=equation, inputs=categorized_inputs, 
