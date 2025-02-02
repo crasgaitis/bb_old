@@ -231,14 +231,15 @@
                 {% endfor %}
             </div>
 
-            <!-- Second row - Remaining Genres -->
-            <div class="calculator-grid" style="grid-template-columns: repeat(2, 1fr); margin-bottom: 12px;">
-                {% for genre in genres[4:] %}
-                <button type="button" class="btn-genre" onclick="addInput('genre')">{{ genre }}</button>
-                {% endfor %}
+            <!-- Second row - Food, Travel, *, / -->
+            <div class="calculator-grid">
+                <button type="button" class="btn-genre" onclick="addInput('genre')">Food</button>
+                <button type="button" class="btn-genre" onclick="addInput('genre')">Travel</button>
+                <button type="button" class="btn-genre btn-operator" onclick="addOperator('*')">*</button>
+                <button type="button" class="btn-genre btn-operator" onclick="addOperator('/')">/</button>
             </div>
 
-            <!-- Third row - Username/Link -->
+            <!-- Third row - Username, Link, +, - -->
             <div class="calculator-grid">
                 <button type="button" class="btn-genre btn-input" onclick="addInput('username')">Username</button>
                 <button type="button" class="btn-genre btn-input" onclick="addInput('link')">Link</button>
@@ -246,11 +247,7 @@
                 <button type="button" class="btn-genre btn-operator" onclick="addOperator('-')">-</button>
             </div>
 
-            <!-- Fourth row - Operators -->
-            <div class="calculator-grid" style="grid-template-columns: repeat(2, 1fr); margin-bottom: 24px;">
-                <button type="button" class="btn-genre btn-operator" onclick="addOperator('*')">*</button>
-                <button type="button" class="btn-genre btn-operator" onclick="addOperator('/')">/</button>
-            </div>
+            <div style="height: 12px;"></div>
 
             <!-- Generate Button -->
             <button type="button" class="generate-btn" onclick="calculate()">
