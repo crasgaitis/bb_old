@@ -9,7 +9,7 @@ from youtube_transcript_api import YouTubeTranscriptApi
 from flask import Flask, render_template, request, redirect, url_for
 import json
 
-openai_key = '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'
+openai_key = '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'
 
 client = OpenAI(api_key=openai_key)
 
@@ -25,20 +25,27 @@ OPERATORS = ['+', '-', '*', '/']
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
+        text_input = request.form.get('text_input', '')
+        print(text_input)
         equation = request.form.get('equation', '')
         categorized_inputs = json.loads(request.form.get('categorized_inputs', '[]'))
-        return redirect(url_for('calculate', equation=equation, categorized_inputs=json.dumps(categorized_inputs)))
+        return redirect(url_for('calculate', equation=equation, text_input=text_input, categorized_inputs=json.dumps(categorized_inputs)))
     
     return render_template('index.html', genres=GENRES, operators=OPERATORS)
 
 @app.route('/calculate')
 def calculate():
+    text_input = request.args.get('text_input', '')
+    print(text_input)
     equation = request.args.get('equation', 'No equation provided')
     categorized_inputs = json.loads(request.args.get('categorized_inputs', '[]'))
 
     print(equation)
     if '-' in equation:
         print('subtraction')
+        sub_flag = True
+    else:
+        sub_flag = False
 
     input_dict = {item['value']: item['category'] for item in categorized_inputs}
     
@@ -77,7 +84,12 @@ def calculate():
         #     print(f'Username: {value}')
         
         # encoded_images = [encode_image(img_path) for img_path in images]
-    text_prompt = "Make a new video idea based on combining the following ideas, comments, and other videos:" + str(genres) + str(commentss) + str(transcripts)
+
+    if sub_flag:
+        text_prompt = str(text_input) + "Make a new video idea based on combining the following ideas, comments, and other videos:" + str(genres) + str(commentss) + str(transcripts)
+    else: 
+        text_prompt = str(text_input) + "Make a new video idea that does not incorporate " + str(genres) + ", and instead is about combining: " + str(commentss) + str(transcripts)
+    
     user_message = [{
         "role": "user",
         "content": [

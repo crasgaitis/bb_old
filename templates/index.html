@@ -189,6 +189,7 @@
         function calculate() {
             const form = document.getElementById('calculator-form');
             const equationInput = document.createElement('input');
+    
             equationInput.type = 'hidden';
             equationInput.name = 'equation';
             equationInput.value = equation.join(' ');
@@ -210,6 +211,9 @@
         </div>
         
         <form id="calculator-form" method="POST">
+            <input type="text" id="text_input" name="text_input" style="width: 100%; padding-bottom: 20px; margin-bottom: 20px" placeholder="I am a 20 year old fisherman creator...">
+
+
             <!-- First row -->
             <div class="calculator-grid">
                 <button type="button" class="btn btn-genre" onclick="addGenre('Beauty')">Beauty</button>
