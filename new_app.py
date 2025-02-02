@@ -127,10 +127,10 @@ def calculate():
     script = response2.choices[0].message.content
 
     user_message4 = [{
-    "role": "user",
-    "content": [
-        {"type": "text", "text": f"Give a list of brands I could work with if I make this kind of YouTube video: {response.choices[0].message.content}"},
-    ]
+        "role": "user",
+        "content": [
+            {"type": "text", "text": f"As an influencer, give a list of brands I could work with if I make this kind of YouTube video: {response.choices[0].message.content}"},
+        ]
     }]
     
     response4 = client.chat.completions.create(
@@ -140,7 +140,8 @@ def calculate():
     )
     
     brands_list = response4.choices[0].message.content
-    
+    print(f"brands list {brands_list}")
+
     text = f"Make a YouTube thumbnail for this: {response.choices[0].message.content}. No text!"
     response3 = client.images.generate(
         model="dall-e-3",
